@@ -15,4 +15,5 @@ ELSE 0
 END threshold_flag
 FROM CTE1
 )
-select * from CTE2;
+select * from CTE2
+order by 1,2,3,4;

@@ -1,37 +1,8 @@
-WITH CTE1 AS (
 SELECT
 fc_type,warehouse_id,shift,week(metric_date) as week,weekday(metric_date)+2 as day, avg(capped_bl) as tcap,avg(uncapped_bl) as ucap
-where metric_date between  
-date_add(CURDATE(), interval - WEEKDAY(CURDATE())-15 day) and  
-date_add(CURDATE(), interval - WEEKDAY(CURDATE())-2 day)
+where metric_date between  DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) 
+and  CURRENT_DATE BETWEEN 
+(DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) - INTERVAL '1 days') 
+AND  
+(DATE_TRUNC('week', DATEADD(day, -1, GETDATE())) - INTERVAL '2 day' )
 GROUP BY 1,2,3,4,5
-),
-CTE2 AS (
-SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap, 
-CASE WHEN ucap > = 0.25 THEN 1
-ELSE 0
-END threshold_flag
-FROM CTE1
-),
-CTE3 AS 
-(
-SELECT fc_type,warehouse_id,shift, day, tcap, ucap,
-)
-
-
-
-RUN THIS:
-
-SELECT 1;
-
-SELECT 
-date_add(CURDATE(), interval - WEEKDAY(CURDATE())-15 DAY);
-
-SELECT DATE_TRUNC('week', DATEADD(day, -14, GETDATE()));
-
-
-SELECT  
-(DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) + INTERVAL '6 days'),  
-(DATE_TRUNC('week', DATEADD(day, -1, GETDATE())) - INTERVAL '1 day' );
-
-

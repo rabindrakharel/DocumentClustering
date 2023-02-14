@@ -15,4 +15,4 @@ ELSE 0
 END threshold_flag
 FROM CTE1
 )
-SELECT warehouse_id,shift,week, day, tcap, ucap,   FROM CTE2; 
+select * from CTE2;

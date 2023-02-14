@@ -1,7 +1,6 @@
 SELECT
 fc_type,warehouse_id,shift,week(metric_date) as week,weekday(metric_date)+2 as day, avg(capped_bl) as tcap,avg(uncapped_bl) as ucap
-where metric_date between  DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) 
-and  CURRENT_DATE BETWEEN 
+where metric_date  BETWEEN 
 (DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) - INTERVAL '1 days') 
 AND  
 (DATE_TRUNC('week', DATEADD(day, -1, GETDATE())) - INTERVAL '2 day' )

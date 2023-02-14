@@ -27,8 +27,7 @@ SELECT 1;
 SELECT 
 date_add(CURDATE(), interval - WEEKDAY(CURDATE())-15 DAY);
 
-
-SELECT DATE_SUB(DATE(NOW()), INTERVAL WEEKDAY(NOW()) + 7 DAY) AS first_day_of_last_week
+SELECT DATE_TRUNC('week', DATEADD(day, -14, GETDATE()));
 
 
 

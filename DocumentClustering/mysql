@@ -12,4 +12,15 @@ CASE WHEN ucap > = 0.25 THEN 1
 ELSE 0
 END flag
 FROM CTE1
-),
+);
+
+
+
+RUN THIS:
+
+SELECT 1;
+
+
+date_add(CURDATE(), interval - WEEKDAY(CURDATE())-2 day);
+
+

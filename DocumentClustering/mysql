@@ -10,7 +10,7 @@ CTE2 AS (
 SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap, 
 CASE WHEN ucap > = 0.25 THEN 1
 ELSE 0
-END flag
+END threshold_flag
 FROM CTE1
 );
 

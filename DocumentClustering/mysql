@@ -1,8 +1,18 @@
+WITH CTE1 AS (
 SELECT
-fc_type,warehouse_id,shift,week(metric_date) as week,weekday(metric_date)+2 as day, avg(capped_bl) as tcap,avg(uncapped_bl) as ucap
+fc_type,warehouse_id,shift,date_part(w,metric_date) as week,date_part(dow,metric_date)+1 as day, avg(capped_bl) as tcap,avg(uncapped_bl) as ucap
 FROM ppt_sandbox.tcap_hours_backlog 
 where metric_date  BETWEEN 
 (DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) - INTERVAL '1 days') 
 AND  
 (DATE_TRUNC('week', DATEADD(day, -1, GETDATE())) - INTERVAL '2 day' )
-GROUP BY 1,2,3,4,5 
+GROUP BY 1,2,3,4,5  
+),
+CTE2 AS (
+SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap, 
+CASE WHEN ucap > = 0.25 THEN 1
+ELSE 0
+END threshold_flag
+FROM CTE1
+)
+SELECT * FROM CTE2; 

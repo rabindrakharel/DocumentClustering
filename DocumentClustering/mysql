@@ -24,7 +24,7 @@ RUN THIS:
 
 SELECT 1;
 
-
+SELECT 
 date_add(CURDATE(), interval - WEEKDAY(CURDATE())-2 day);
 
 

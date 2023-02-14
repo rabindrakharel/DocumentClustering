@@ -30,4 +30,8 @@ date_add(CURDATE(), interval - WEEKDAY(CURDATE())-15 DAY);
 SELECT DATE_TRUNC('week', DATEADD(day, -14, GETDATE()));
 
 
+SELECT  
+(DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) + INTERVAL '6 days'),  
+(DATE_TRUNC('week', DATEADD(day, -1, GETDATE())) - INTERVAL '1 day' );
+
 

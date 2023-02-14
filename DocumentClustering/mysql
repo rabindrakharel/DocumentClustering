@@ -10,10 +10,11 @@ GROUP BY 1,2,3,4,5
 ),
 CTE2 AS (
 SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap, 
-CASE WHEN ucap >= 0.25 THEN 1
+CASE WHEN ucap <= 0.25 THEN 1
 ELSE 0
 END threshold_flag
 FROM CTE1
 )
-select * from CTE2
-order by 1,2,3,4;
+SELECT fc_type,shift,warehouse_id,week, day, tcap, ucap,threshold_flag, (avg(tcap) over (partition by warehouse_id,shift,day)) as average_tcap
+  FROM CTE2
+ ORDER BY 1 asc, 2 asc, 3 asc, 4 asc, 5 asc;

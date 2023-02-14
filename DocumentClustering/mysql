@@ -12,7 +12,11 @@ CASE WHEN ucap > = 0.25 THEN 1
 ELSE 0
 END threshold_flag
 FROM CTE1
-);
+),
+CTE3 AS 
+(
+SELECT fc_type,warehouse_id,shift, day, tcap, ucap,
+)
 
 
 

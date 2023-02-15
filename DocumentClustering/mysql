@@ -9,12 +9,41 @@ AND
 GROUP BY 1,2,3,4,5  
 ),
 CTE2 AS (
-SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap, 
-CASE WHEN ucap <= 0.25 THEN 1
+SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap
+FROM CTE1
+),
+CTE3 as (
+SELECT fc_type,shift,warehouse_id,week, day, tcap, ucap, (avg(tcap) over (partition by warehouse_id,shift,day)) as avg_tcap
+  FROM CTE2
+ ORDER BY 1 asc, 2 asc, 3 asc, 4 asc, 5 asc
+ ),
+ CTE4 as (
+SELECT fc_type,warehouse_id,week, day,
+max(CASE WHEN shift='Day' then tcap else -100.00 END) as tcap_day,
+max(CASE WHEN shift='Night' then tcap else -100.00 END) as tcap_night,
+max(CASE WHEN shift='Day' then ucap else -100.00 END) as ucap_day,
+max(CASE WHEN shift='Night' then ucap else -100.00 END) as ucap_night,
+max(CASE WHEN shift='Day' then avg_tcap else -100.00 END) as avg_tcap_day,
+max(CASE WHEN shift='Night' then avg_tcap else -100.00 END) as avg_tcap_night 
+  FROM CTE3 GROUP BY 1,2,3,4
+  ),
+  SELECT fc_type,warehouse_id,week, day,
+  tcap_day, 
+  tcap_night, 
+  (tcap_night+tcap_day)/2 as tcap_day_night,
+  ucap_day, 
+  ucap_night, 
+  (ucap_night+ucap_day)/2 as ucap_day_night,
+  avg_tcap_day, 
+  avg_tcap_night, 
+  (avg_tcap_day+avg_tcap_night)/2 as tcap_day_night,
+CASE WHEN (ucap_night+ucap_day)/2 <= 0.25 THEN 1
 ELSE 0
 END threshold_flag
-FROM CTE1
-)
-SELECT fc_type,shift,warehouse_id,week, day, tcap, ucap,threshold_flag, (avg(tcap) over (partition by warehouse_id,shift,day)) as average_tcap
-  FROM CTE2
- ORDER BY 1 asc, 2 asc, 3 asc, 4 asc, 5 asc;
+  FROM CTE4;
+  
+  
+  
+  
+  
+  

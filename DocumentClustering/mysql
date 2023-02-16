@@ -1,6 +1,6 @@
 WITH CTE1 AS (
 SELECT
-fc_type,warehouse_id,shift,date_part(w,metric_date) as week,date_part(dow,metric_date)+1 as day, avg(capped_days_of_backlog) as tcap,avg(uncapped_days_of_backlog) as ucap
+fc_type,warehouse_id,shift,(date_trunc('week', '2022-02-14'::date)-interval '1 day')::date as week_start_dt,date_part(dow,metric_date)+1 as day, avg(capped_days_of_backlog) as tcap,avg(uncapped_days_of_backlog) as ucap
 FROM ppt_sandbox.tcap_hours_backlog 
 where metric_date  BETWEEN 
 (DATE_TRUNC('week', DATEADD(day, -14, GETDATE())) - INTERVAL '1 days') 
@@ -9,16 +9,16 @@ AND
 GROUP BY 1,2,3,4,5  
 ),
 CTE2 AS (
-SELECT fc_type,warehouse_id,shift,week, day, tcap, ucap
+SELECT fc_type,warehouse_id,shift,week_start_dt, day, tcap, ucap
 FROM CTE1
 ),
 CTE3 as (
-SELECT fc_type,shift,warehouse_id,week, day, tcap, ucap, (avg(tcap) over (partition by warehouse_id,shift,day)) as avg_tcap
+SELECT fc_type,shift,warehouse_id,week_start_dt, day, tcap, ucap, (avg(tcap) over (partition by warehouse_id,shift,day)) as avg_tcap
   FROM CTE2
  ORDER BY 1 asc, 2 asc, 3 asc, 4 asc, 5 asc
  ),
  CTE4 as (
-SELECT fc_type,warehouse_id,week, day,
+SELECT fc_type,warehouse_id,week_start_dt, day,
 max(CASE WHEN shift='Day' then tcap else -100.00 END) as tcap_day,
 max(CASE WHEN shift='Night' then tcap else -100.00 END) as tcap_night,
 max(CASE WHEN shift='Day' then ucap else -100.00 END) as ucap_day,
@@ -27,7 +27,7 @@ max(CASE WHEN shift='Day' then avg_tcap else -100.00 END) as avg_tcap_day,
 max(CASE WHEN shift='Night' then avg_tcap else -100.00 END) as avg_tcap_night 
   FROM CTE3 GROUP BY 1,2,3,4
   ),
-  SELECT fc_type,warehouse_id,week, day,
+  SELECT fc_type,warehouse_id,week_start_dt, day,
   tcap_day, 
   tcap_night, 
   (tcap_night+tcap_day)/2 as tcap_day_night,
